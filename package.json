@@ -22,6 +22,6 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "xss": "^1.0.15"
+    "sanitize-html": "^2.14.0"
   }
 }

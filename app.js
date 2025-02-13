@@ -4,13 +4,11 @@ const addressRoute = require("./routes/address");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const xss = require("xss");
-
+const sanitizeHtml = require("sanitize-html");
 
 // create express app
 const app = express();
 app.use(express.json());
-
 
 // use helmet HTTP Headers
 app.use(helmet());
@@ -20,9 +18,16 @@ const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 app.use((req, res, next) => {
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return next();
+  }
+
   req.body = JSON.parse(JSON.stringify(req.body), (key, value) =>
-    typeof value === "string" ? xss(value) : value
+    typeof value === "string"
+      ? sanitizeHtml(value, { allowedTags: [], allowedAttributes: {} })
+      : value
   );
+
   next();
 });
 

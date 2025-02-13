@@ -8,7 +8,8 @@ dotenv.config();
 const connectToDB = async () => {
   try {
     await mongoose.connect(
-      "mongodb+srv://mohammad:Mgh3300305421@todo.vtdbj.mongodb.net/todo?retryWrites=true&w=majority&appName=todo"
+      // "mongodb+srv://mohammad:Mgh3300305421@todo.vtdbj.mongodb.net/todo?retryWrites=true&w=majority&appName=todo"
+      `${process.env.MY_MONGO_URI_USERSTASK}`
     );
     console.log(`MongoDB connected: ${mongoose.connection.host}`);
   } catch (err) {

@@ -8,6 +8,7 @@ const sanitizeHtml = require("sanitize-html");
 
 // create express app
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json());
 
 // use helmet HTTP Headers

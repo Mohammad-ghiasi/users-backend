@@ -54,7 +54,7 @@ app.use((err, req, res, next) => {
 
 // statrt response
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send(`Hello, Worldss! ${process.env.MY_MONGO_URI_USERSTASK}`);
 });
 
 //* Routes

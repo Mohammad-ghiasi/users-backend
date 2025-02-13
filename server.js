@@ -16,7 +16,6 @@ const connectToDB = async () => {
     process.exit(1);
   }
 };
-console.log(`${process.env.MY_MONGO_URI_USERSTASK}`);
 
 
 //* Start app

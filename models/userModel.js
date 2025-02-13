@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"], // اعتبارسنجی ایمیل
+      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
     firstname: {
       type: String,
@@ -24,12 +24,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    addresses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MyAddress", // ارتباط با مدل آدرس
+      },
+    ],
   },
   { timestamps: true }
 );
 
+// delete address for deleted user
+userSchema.pre("findOneAndDelete", async function (next) {
+  const userId = this.getQuery()._id;
+  await mongoose.model("MyAddress").deleteMany({ user: userId });
+  next();
+});
 
-const userModel = mongoose.model("MyUsers", userSchema);
+const User = mongoose.model("MyUsers", userSchema);
 
-
-module.exports = userModel;
+module.exports = User;

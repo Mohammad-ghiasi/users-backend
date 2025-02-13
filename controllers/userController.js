@@ -67,12 +67,12 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: {
-        id: user._id,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-      },
+      // user: {
+      //   id: user._id,
+      //   email: user.email,
+      //   firstname: user.firstname,
+      //   lastname: user.lastname,
+      // },
     });
   } catch (error) {
     next(error);
@@ -84,7 +84,7 @@ exports.login = async (req, res, next) => {
 exports.users = async (req, res, next) => {
   try {
     // Token validation
-    await verifyToken(req, res);
+    verifyToken(req, res);
 
     // Extract page and limit from query parameters (defaults to page 1 and 10 users per page)
     const page = parseInt(req.query.page) || 1;
@@ -94,7 +94,7 @@ exports.users = async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     // Fetch users with pagination
-    const users = await UserModle.find().skip(skip).limit(limit);
+    const users = await UserModle.find().select("-password -addresses -updatedAt").skip(skip).limit(limit);
 
     // Count total users for pagination metadata
     const totalUsers = await UserModle.countDocuments();
@@ -119,12 +119,15 @@ exports.users = async (req, res, next) => {
 exports.user = async (req, res, next) => {
   try {
     // Token validation
-    await verifyToken(req, res);
+    verifyToken(req, res);
 
     const { userId } = req.params;
 
     // find user by id
-    const user = await UserModle.findById(userId);
+    const user = await UserModle.findById(userId).populate("addresses");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     // Return user
     return res.status(200).json({ user });
@@ -138,7 +141,7 @@ exports.user = async (req, res, next) => {
 exports.updateUsers = async (req, res, next) => {
   try {
     // token validation
-    await verifyToken(req, res);
+    verifyToken(req, res);
     // get userId from query
     const userId = req.params.userId;
     if (!userId) {
@@ -152,7 +155,7 @@ exports.updateUsers = async (req, res, next) => {
     // validate email exist
     const validateEmai = await UserModle.find({email : req.body.email, _id : {$ne:id}});
     if (validateEmai.length > 0) {
-      return res.status(400).json({ message: "Email alredu exist" });
+      return res.status(400).json({ message: "Email alredy exist" });
     }
     
     
@@ -198,7 +201,7 @@ exports.updateUsers = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     // token validation
-    await verifyToken(req, res);
+    verifyToken(req, res);
 
     // Get userId from route parameter
     const userId = req.params.userId;

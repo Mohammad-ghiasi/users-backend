@@ -1,6 +1,5 @@
 const express = require("express");
 const userRoute = require("./routes/user");
-const addressRoute = require("./routes/address");
 const cors = require("cors");
 
 const app = express();
@@ -29,6 +28,5 @@ app.get("/", (req, res) => {
 
 //* Routes
 app.use("/users", userRoute);
-app.use("/address", addressRoute);
 
 module.exports = app;

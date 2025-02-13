@@ -15,7 +15,7 @@ exports.alladdress = async (req, res, next) => {
     // find all address
     const allAddress = await AddressModle.find();
     return res
-      .status(201)
+      .status(200)
       .json({ message: "Address added successfully", allAddress });
   } catch (error) {
     console.error("Error in newAddress:", error);

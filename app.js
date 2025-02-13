@@ -5,6 +5,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const sanitizeHtml = require("sanitize-html");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 // create express app
 const app = express();

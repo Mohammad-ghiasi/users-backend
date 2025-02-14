@@ -21,6 +21,7 @@ app.use(helmet());
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
+// difend (XSS)
 app.use((req, res, next) => {
   if (!req.body || Object.keys(req.body).length === 0) {
     return next();
@@ -40,7 +41,8 @@ app.use(express.json());
 // * CORS Policy
 app.use(
   cors({
-    origin: "https://users-task-nu.vercel.app",
+    origin: process.env.MY_SECRET_USERSTASK,
+    // origin: "https://users-task-nu.vercel.app",
     // origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -64,8 +66,17 @@ app.get("/", (req, res) => {
 app.use("/users", userRoute);
 app.use("/address", addressRoute);
 app.get("/env", (req, res) => {
-  res.status(200).json({message: process.env.MY_MONGO_URI_USERSTASK || undefined});
-})
+  res
+    .status(200)
+    .json({
+      message:
+        {
+          port: process.env.MY_PORT_USERSTASK,
+          secret: process.env.MY_SECRET_USERSTASK,
+          frontOrigin: process.env.MY_FRONTEND_ORIGIN_USERSTASK,
+        } || undefined,
+    });
+});
 
 // handleing errors
 app.use((err, req, res, next) => {

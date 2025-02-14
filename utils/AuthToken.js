@@ -9,7 +9,7 @@ const verifyToken = (req, res) => {
 
   try {
     // Token validation
-    const decoded = jwt.verify(token, "my_secret");
+    const decoded = jwt.verify(token, process.env.MY_SECRET_USERSTASK);
     // const decoded = await jwt.verify(token, process.env.MY_SECRET);
     return decoded;
   } catch (error) {

@@ -58,7 +58,7 @@ exports.login = async (req, res, next) => {
     // create token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      "my_secret",
+      process.env.MY_SECRET_USERSTASK,
       //   process.env.MY_SECRET,
       { expiresIn: "2d" } // تنظیم زمان انقضای توکن
     );

@@ -64,7 +64,7 @@ app.get("/", (req, res) => {
 app.use("/users", userRoute);
 app.use("/address", addressRoute);
 app.get("/env", (req, res) => {
-  res.status(200).json({message: process.env.MY_MONGO_URI_USERSTASK});
+  res.status(200).json({message: process.env.MY_MONGO_URI_USERSTASK || undefined});
 })
 
 // handleing errors

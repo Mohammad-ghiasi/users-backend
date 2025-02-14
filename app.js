@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
 //* Routes
 app.use("/users", userRoute);
 app.use("/address", addressRoute);
-app.get("/env", (res) => {
+app.get("/env", (req, res) => {
   res.status(200).json({message: process.env.MY_MONGO_URI_USERSTASK});
 })
 

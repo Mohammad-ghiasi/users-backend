@@ -30,7 +30,7 @@ const editAddressSchema = Joi.object({
 });
 
 exports.validateEditAddress = (data) => {
-  const { error } = editAddressSchema.validate(data, { abortEarly: false });
+  const { error } = editAddressSchema.validate(data, { abortEarly: true });
   if (error) {
     return {
       error: error.details.map((err) => err.message), // لیست خطاها

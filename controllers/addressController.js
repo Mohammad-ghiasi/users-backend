@@ -36,12 +36,52 @@ exports.newaddress = async (req, res, next) => {
     if (error) {
       return res.status(400).json({
         message: "Validation error",
-        errors: error.details.map((err) => err.message),
+        error,
       });
     }
 
-    const { addressName, address, lat, lng } = req.body;
+    const { id, addressName, address, lat, lng } = req.body;
 
+    exports.newaddress = async (req, res, next) => {
+      try {
+        // validating token
+        const { userId } = verifyToken(req, res);
+        if (!userId) {
+          return res.status(401).json({ message: "Unauthorized" });
+        }
+        // valdidating requset body
+        const { error } = validateAddress(req.body);
+        if (error) {
+          return res.status(400).json({
+            message: "Validation error",
+            error,
+          });
+        }
+    
+        const { addressName, address, lat, lng } = req.body;
+    
+        // // create new address
+        const newAddress = await AddressModle.create({
+          user: userId,
+          addressName,
+          address,
+          lat,
+          lng,
+        });
+    
+        // add creates addres to user
+        await UserModle.findByIdAndUpdate(userId, {
+          $push: { addresses: newAddress._id },
+        });
+    
+        return res
+          .status(201)
+          .json({ message: "Address added successfully", newAddress });
+      } catch (error) {
+        console.error("Error in newAddress:", error);
+        next(error);
+      }
+    };
     // // create new address
     const newAddress = await AddressModle.create({
       user: userId,
@@ -125,22 +165,16 @@ exports.editaddress = async (req, res, next) => {
 //delte address
 exports.deleteAddress = async (req, res, next) => {
   try {
-    // اعتبارسنجی توکن
     const { userId } = verifyToken(req, res);
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // گرفتن آیدی آدرسی که باید حذف بشه
     const { addressId } = req.params;
     if (!addressId) {
       return res.status(400).json({ message: "invalid address id" });
     }
-    console.log(addressId);
 
-    // return res.status(401).json({ message: "Unauthorized TEST" });
-
-    // بررسی اینکه آدرس موردنظر وجود داره و متعلق به همین کاربره
     const address = await AddressModle.findOne({
       _id: addressId,
       user: userId,

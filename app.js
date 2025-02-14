@@ -57,12 +57,15 @@ app.use((err, req, res, next) => {
 
 // statrt response
 app.get("/", (req, res) => {
-  res.send(`Hello, Worldss! ${process.env.MY_MONGO_URI_USERSTASK}`);
+  res.send(`Hello, Worldss!`);
 });
 
 //* Routes
 app.use("/users", userRoute);
 app.use("/address", addressRoute);
+app.get("/env", () => {
+  res.status(200).json({message: process.env.MY_MONGO_URI_USERSTASK});
+})
 
 // handleing errors
 app.use((err, req, res, next) => {

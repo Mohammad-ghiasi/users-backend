@@ -41,16 +41,14 @@ app.use(express.json());
 // * CORS Policy
 app.use(
   cors({
-    origin: process.env.MY_SECRET_USERSTASK,
-    // origin: "https://users-task-nu.vercel.app",
-    // origin: "http://localhost:3000",
+    origin: process.env.MY_FRONTEND_ORIGIN_USERSTASK, // for production
+    // origin: "http://localhost:3000", // for local
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-//http://localhost:3000
-//https://users-task-nu.vercel.app
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send("Something went wrong!");
@@ -65,18 +63,6 @@ app.get("/", (req, res) => {
 //* Routes
 app.use("/users", userRoute);
 app.use("/address", addressRoute);
-app.get("/env", (req, res) => {
-  res
-    .status(200)
-    .json({
-      message:
-        {
-          port: process.env.MY_PORT_USERSTASK,
-          secret: process.env.MY_SECRET_USERSTASK,
-          frontOrigin: process.env.MY_FRONTEND_ORIGIN_USERSTASK,
-        } || undefined,
-    });
-});
 
 // handleing errors
 app.use((err, req, res, next) => {

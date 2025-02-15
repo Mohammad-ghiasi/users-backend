@@ -2,6 +2,7 @@ const UserModle = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { verifyToken } = require("../utils/AuthToken");
+const crypto = require("crypto");
 
 // signup user
 exports.signup = async (req, res, next) => {
@@ -62,11 +63,13 @@ exports.login = async (req, res, next) => {
       //   process.env.MY_SECRET,
       { expiresIn: "2d" } // تنظیم زمان انقضای توکن
     );
+    const userIdHash = user._id.toString().slice(-6);
 
     // ارسال توکن و اطلاعات کاربر
     return res.status(200).json({
       message: "Login successful",
       token,
+      userIdHash,
       // user: {
       //   id: user._id,
       //   email: user.email,
@@ -94,7 +97,10 @@ exports.users = async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     // Fetch users with pagination
-    const users = await UserModle.find().select("-password -addresses -updatedAt").skip(skip).limit(limit);
+    const users = await UserModle.find()
+      .select("-password -addresses -updatedAt")
+      .skip(skip)
+      .limit(limit);
 
     // Count total users for pagination metadata
     const totalUsers = await UserModle.countDocuments();
@@ -148,17 +154,19 @@ exports.updateUsers = async (req, res, next) => {
       return res.status(400).json({ message: "User ID is required" });
     }
     // existing user
-    const {email: existUerEmail, _id: id} = await UserModle.findById(userId);
+    const { email: existUerEmail, _id: id } = await UserModle.findById(userId);
     if (!existUerEmail) {
       return res.status(400).json({ message: "Culd not find user" });
     }
     // validate email exist
-    const validateEmai = await UserModle.find({email : req.body.email, _id : {$ne:id}});
+    const validateEmai = await UserModle.find({
+      email: req.body.email,
+      _id: { $ne: id },
+    });
     if (validateEmai.length > 0) {
       return res.status(400).json({ message: "Email alredy exist" });
     }
-    
-    
+
     const updateUser = {
       password: req.body.password || null,
       job: req.body.job || null,

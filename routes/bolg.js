@@ -6,10 +6,10 @@ const {
   getBlog,
   getBlogs,
 } = require("../controllers/blogController");
-const { setTimeoutMiddleware } = require("../middleware/blogGenerateTimeout");
+const { setTimeoutMiddleware, clearTimeoutMiddleware } = require("../middleware/blogGenerateTimeout");
 const router = express.Router();
 
-router.post("/generateblog", setTimeoutMiddleware, generateBlog);
+router.post("/generateblog", setTimeoutMiddleware, generateBlog, clearTimeoutMiddleware);
 router.post("/addblog", addBlog);
 router.get("/blog/:blogId", getBlog);
 router.get("/blogs", getBlogs);

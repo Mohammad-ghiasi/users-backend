@@ -27,11 +27,12 @@ const userSchema = Joi.object({
   }),
 });
 
+// Validation function that returns an error message if validation fails
 exports.validateUser = (data) => {
   const { error } = userSchema.validate(data, { abortEarly: true });
   if (error) {
     return {
-      error: error.details.map((err) => err.message),
+      error: error.details[0].message, // Get the first error message
       isValid: false,
     };
   }

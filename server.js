@@ -1,6 +1,7 @@
 const app = require("./app");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const swaggerDocs = require("./swagger");
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const connectToDB = async () => {
 
 //* Start app
 const startServer = () => {
+  swaggerDocs(app);
   const port = process.env.MY_PORT_USERSTASK || 3400;
   app.listen(port, () => {
     console.log(`🚀 Server is running on port ${port}`);

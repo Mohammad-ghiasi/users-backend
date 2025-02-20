@@ -26,6 +26,8 @@
     "mongoose": "^8.9.5",
     "openai": "^4.85.2",
     "sanitize-html": "^2.14.0",
-    "socks-proxy-agent": "^8.0.5"
+    "socks-proxy-agent": "^8.0.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

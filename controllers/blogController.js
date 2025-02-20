@@ -42,7 +42,9 @@ exports.generateBlog = async (req, res) => {
       },
       {
         headers: { Authorization: `Bearer ${process.env.MY_AI_APIKEY}` },
-      }
+        timeout: 30000
+      },
+      
     );
     const format = formatResponse(response.data.choices[0].message.content, language);
     

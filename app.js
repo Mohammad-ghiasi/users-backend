@@ -7,13 +7,14 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const sanitizeHtml = require("sanitize-html");
 const dotenv = require("dotenv");
+const app = express();
+const server = require("http").createServer(app);
+server.timeout = 30000;
 
 dotenv.config();
 
 // create express app
-const app = express();
 app.set("trust proxy", 1);
-app.use(express.json());
 
 // use helmet HTTP Headers
 app.use(helmet());
@@ -50,7 +51,7 @@ app.use(
   })
 );
 
-app.use((err, req, res, next) => {
+app.use((err, req, res,) => {
   console.error(err);
   res.status(500).send("Something went wrong!");
   next();

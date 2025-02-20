@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -22,6 +24,8 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "sanitize-html": "^2.14.0"
+    "openai": "^4.85.2",
+    "sanitize-html": "^2.14.0",
+    "socks-proxy-agent": "^8.0.5"
   }
 }

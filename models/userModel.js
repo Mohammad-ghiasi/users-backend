@@ -27,17 +27,24 @@ const userSchema = new mongoose.Schema(
     addresses: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "MyAddress", // ارتباط با مدل آدرس
+        ref: "MyAddress",
+      },
+    ],
+    blogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "blog", 
       },
     ],
   },
   { timestamps: true }
 );
 
-// delete address for deleted user
+// delete address and blog for deleted user
 userSchema.pre("findOneAndDelete", async function (next) {
   const userId = this.getQuery()._id;
   await mongoose.model("MyAddress").deleteMany({ user: userId });
+  await mongoose.model("Blog").deleteMany({ user: userId }); // حذف مقالات کاربر
   next();
 });
 

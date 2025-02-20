@@ -3,10 +3,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { verifyToken } = require("../utils/AuthToken");
 const crypto = require("crypto");
+const { validateUser } = require("../utils/validators/userValidate");
 
 // signup user
 exports.signup = async (req, res, next) => {
   try {
+    const { isValid, error } = validateUser(req.body);
+    if (!isValid) {
+      return res.status(400).json({ errors: error });
+    }
     const { password, job, email, firstname, lastname } = req.body;
 
     // existing user

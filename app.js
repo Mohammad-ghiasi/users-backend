@@ -1,6 +1,7 @@
 const express = require("express");
 const userRoute = require("./routes/user");
 const addressRoute = require("./routes/address");
+const blogRoute = require("./routes/bolg");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -63,6 +64,7 @@ app.get("/", (req, res) => {
 //* Routes
 app.use("/users", userRoute);
 app.use("/address", addressRoute);
+app.use("/blog", blogRoute);
 
 // handleing errors
 app.use((err, req, res, next) => {

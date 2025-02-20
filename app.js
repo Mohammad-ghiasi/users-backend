@@ -8,8 +8,7 @@ const rateLimit = require("express-rate-limit");
 const sanitizeHtml = require("sanitize-html");
 const dotenv = require("dotenv");
 const app = express();
-const server = require("http").createServer(app);
-server.timeout = 30000;
+
 
 dotenv.config();
 

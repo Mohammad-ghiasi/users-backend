@@ -1,16 +1,15 @@
-const Blog = require("../models/blogModel");
-const User = require("../models/userModel");
-const axios = require("axios");
-const { verifyToken } = require("../utils/AuthToken");
-const { validateBlog } = require("../utils/validators/createBlogValidate");
-const {
-  validateBlogGenerate,
-} = require("../utils/validators/blogGeneratoeValidate");
-const { promptLanguage } = require("../utils/languagemanager/promtLanguage");
-const { formatResponse } = require("../utils/languagemanager/languageFormater");
+import Blog from "../models/blogModel.js";
+import User from "../models/userModel.js";
+import axios from "axios";
+import { verifyToken } from "../utils/AuthToken.js";
+import { validateBlog } from "../utils/validators/createBlogValidate.js";
+import { validateBlogGenerate } from "../utils/validators/blogGeneratoeValidate.js";
+import { promptLanguage } from "../utils/languagemanager/promtLanguage.js";
+import { formatResponse } from "../utils/languagemanager/languageFormater.js";
+
 
 // create conent blog
-exports.generateBlog = async (req, res) => {
+export const generateBlog = async (req, res) => {
   try {
     const { userId } = verifyToken(req, res);
     if (!userId) {
@@ -24,7 +23,12 @@ exports.generateBlog = async (req, res) => {
 
     const { category, length, keywords, language } = req.body;
 
-    if (!category || !length || !Array.isArray(keywords) || keywords.length === 0) {
+    if (
+      !category ||
+      !length ||
+      !Array.isArray(keywords) ||
+      keywords.length === 0
+    ) {
       return res.status(400).json({ error: "Invalid request parameters" });
     }
 
@@ -42,14 +46,13 @@ exports.generateBlog = async (req, res) => {
       },
       {
         headers: { Authorization: `Bearer ${process.env.MY_AI_APIKEY}` },
-        timeout: 30000
+        timeout: 30000,
       },
-      
     );
-    const format = formatResponse(response.data.choices[0].message.content, language);
-    
-
-   
+    const format = formatResponse(
+      response.data.choices[0].message.content,
+      language,
+    );
 
     res.status(200).json({ format });
   } catch (error) {
@@ -58,9 +61,8 @@ exports.generateBlog = async (req, res) => {
   }
 };
 
-
 // careate a new blog on database
-exports.addBlog = async (req, res) => {
+export const addBlog = async (req, res) => {
   try {
     const { userId } = verifyToken(req, res);
     if (!userId) {
@@ -92,13 +94,13 @@ exports.addBlog = async (req, res) => {
 };
 
 // get all blog
-exports.getBlog = async (req, res) => {
+export const getBlog = async (req, res) => {
   try {
     const { id } = req.params; // گرفتن ID از پارامترهای URL
 
     const blog = await Blog.findById(id).populate(
       "user",
-      "firstname lastname email"
+      "firstname lastname email",
     );
 
     if (!blog) {
@@ -113,11 +115,11 @@ exports.getBlog = async (req, res) => {
 };
 
 // get all blogs
-exports.getBlogs = async (req, res) => {
+export const getBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find().populate(
       "user",
-      "firstname lastname email"
+      "firstname lastname email",
     ); // لیست بلاگ‌ها + اطلاعات نویسنده
 
     res.status(200).json({ blogs }); // مقالات رو برگردون

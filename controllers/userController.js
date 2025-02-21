@@ -1,12 +1,11 @@
-const UserModle = require("../models/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { verifyToken } = require("../utils/AuthToken");
-const crypto = require("crypto");
-const { validateUser } = require("../utils/validators/userValidate");
+import UserModel from "../models/userModel.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { validateUser } from "../utils/validators/userValidate.js";
+import { verifyToken } from "../utils/AuthToken.js";
 
 // signup user
-exports.signup = async (req, res, next) => {
+export const signup = async (req, res, next) => {
   try {
     // const { error, isValid } = validateUser(req.body);
     // if (!isValid) {
@@ -15,7 +14,7 @@ exports.signup = async (req, res, next) => {
     const { password, job, email, firstname, lastname } = req.body;
 
     // existing user
-    const existUser = await UserModle.findOne({ email });
+    const existUser = await UserModel.findOne({ email });
     if (existUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
@@ -29,7 +28,7 @@ exports.signup = async (req, res, next) => {
       firstname,
       lastname,
     };
-    const createdNewUser = await UserModle.create(newUser);
+    const createdNewUser = await UserModel.create(newUser);
     return res.status(201).json({ createdNewUser });
   } catch (error) {
     next(error);
@@ -38,7 +37,7 @@ exports.signup = async (req, res, next) => {
 };
 
 // login user
-exports.login = async (req, res, next) => {
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -50,7 +49,7 @@ exports.login = async (req, res, next) => {
     }
 
     // existing user
-    const user = await UserModle.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -66,7 +65,7 @@ exports.login = async (req, res, next) => {
       { userId: user._id, email: user.email },
       process.env.MY_SECRET_USERSTASK,
       //   process.env.MY_SECRET,
-      { expiresIn: "2d" } // تنظیم زمان انقضای توکن
+      { expiresIn: "2d" }, // تنظیم زمان انقضای توکن
     );
     const userIdHash = user._id.toString().slice(-6);
 
@@ -89,7 +88,7 @@ exports.login = async (req, res, next) => {
 };
 
 // send list of users
-exports.users = async (req, res, next) => {
+export const users = async (req, res, next) => {
   try {
     // Token validation
     verifyToken(req, res);
@@ -102,13 +101,13 @@ exports.users = async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     // Fetch users with pagination
-    const users = await UserModle.find()
+    const users = await UserModel.find()
       .select("-password -addresses -updatedAt")
       .skip(skip)
       .limit(limit);
 
     // Count total users for pagination metadata
-    const totalUsers = await UserModle.countDocuments();
+    const totalUsers = await UserModel.countDocuments();
 
     // Return users with pagination metadata
     return res.status(200).json({
@@ -127,7 +126,7 @@ exports.users = async (req, res, next) => {
 };
 
 // send single user
-exports.user = async (req, res, next) => {
+export const user = async (req, res, next) => {
   try {
     // Token validation
     verifyToken(req, res);
@@ -135,7 +134,7 @@ exports.user = async (req, res, next) => {
     const { userId } = req.params;
 
     // find user by id
-    const user = await UserModle.findById(userId).populate("addresses");
+    const user = await UserModel.findById(userId).populate("addresses");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -149,7 +148,7 @@ exports.user = async (req, res, next) => {
 };
 
 // update users
-exports.updateUsers = async (req, res, next) => {
+export const updateUsers = async (req, res, next) => {
   try {
     // token validation
     verifyToken(req, res);
@@ -159,12 +158,12 @@ exports.updateUsers = async (req, res, next) => {
       return res.status(400).json({ message: "User ID is required" });
     }
     // existing user
-    const { email: existUerEmail, _id: id } = await UserModle.findById(userId);
+    const { email: existUerEmail, _id: id } = await UserModel.findById(userId);
     if (!existUerEmail) {
       return res.status(400).json({ message: "Culd not find user" });
     }
     // validate email exist
-    const validateEmai = await UserModle.find({
+    const validateEmai = await UserModel.find({
       email: req.body.email,
       _id: { $ne: id },
     });
@@ -190,10 +189,10 @@ exports.updateUsers = async (req, res, next) => {
       return res.status(400).json({ message: "No fields to update" });
     }
     // update user in database
-    const updatedUser = await UserModle.findByIdAndUpdate(
+    const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $set: updateUser },
-      { new: true, runValidators: true } // `new: true` برای بازگشت کاربر به‌روزرسانی‌شده
+      { new: true, runValidators: true }, // `new: true` برای بازگشت کاربر به‌روزرسانی‌شده
     );
 
     if (!updatedUser) {
@@ -211,7 +210,7 @@ exports.updateUsers = async (req, res, next) => {
 };
 
 // delete user
-exports.deleteUser = async (req, res, next) => {
+export const deleteUser = async (req, res, next) => {
   try {
     // token validation
     verifyToken(req, res);
@@ -223,7 +222,7 @@ exports.deleteUser = async (req, res, next) => {
     }
 
     // Find and delete the user from the database
-    const user = await UserModle.findByIdAndDelete(userId);
+    const user = await UserModel.findByIdAndDelete(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

@@ -6,7 +6,7 @@ export const promptLanguage = (data) => {
 
   if (!length || !category || !Array.isArray(keywords)) {
     throw new Error(
-      "Invalid input: length, category, and keywords are required."
+      "Invalid input: length, category, and keywords are required.",
     );
   }
 

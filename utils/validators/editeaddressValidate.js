@@ -1,12 +1,17 @@
-const Joi = require("joi");
+import Joi from "joi";
+
 
 const editAddressSchema = Joi.object({
-  id: Joi.string().trim().regex(/^[0-9a-fA-F]{24}$/).required().messages({
-    "string.empty": "Address Id is required.",
-    "string.base": "ID must be a string.",
-    "string.empty": "ID is required.",
-    "string.pattern.base": "ID must be a valid MongoDB ObjectId.",
-  }),
+  id: Joi.string()
+    .trim()
+    .regex(/^[0-9a-fA-F]{24}$/)
+    .required()
+    .messages({
+      "string.empty": "Address Id is required.",
+      "string.base": "ID must be a string.",
+      "string.empty": "ID is required.",
+      "string.pattern.base": "ID must be a valid MongoDB ObjectId.",
+    }),
   addressName: Joi.string().trim().min(3).max(50).messages({
     "string.base": "Address Name must be a string.",
     "string.min": "Address Name must be at least 3 characters.",
@@ -29,7 +34,7 @@ const editAddressSchema = Joi.object({
   }),
 });
 
-exports.validateEditAddress = (data) => {
+export const validateEditAddress = (data) => {
   const { error } = editAddressSchema.validate(data, { abortEarly: true });
   if (error) {
     return {

@@ -1,4 +1,5 @@
-const Joi = require("joi");
+import Joi from "joi";
+
 
 const addressSchema = Joi.object({
   addressName: Joi.string().trim().min(3).max(50).required().messages({
@@ -29,7 +30,7 @@ const addressSchema = Joi.object({
   }),
 });
 
-exports.validateAddress = (data) => {
+export const validateAddress = (data) => {
   const { error } = addressSchema.validate(data, { abortEarly: false });
   if (error) {
     return {

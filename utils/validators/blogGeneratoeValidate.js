@@ -1,4 +1,5 @@
-const Joi = require("joi");
+import Joi from "joi";
+
 
 const blogMetaSchema = Joi.object({
   category: Joi.string().trim().min(2).max(50).required().messages({
@@ -11,19 +12,23 @@ const blogMetaSchema = Joi.object({
     "number.min": "Length must be at least 100 words.",
     "number.max": "Length cannot be more than 1000 words.",
   }),
-  keywords: Joi.array().items(Joi.string().trim().min(2).max(30)).min(1).required().messages({
-    "array.base": "Keywords must be an array of strings.",
-    "array.min": "At least one keyword is required.",
-    "string.min": "Each keyword must be at least 2 characters.",
-    "string.max": "Each keyword cannot be more than 30 characters.",
-  }),
+  keywords: Joi.array()
+    .items(Joi.string().trim().min(2).max(30))
+    .min(1)
+    .required()
+    .messages({
+      "array.base": "Keywords must be an array of strings.",
+      "array.min": "At least one keyword is required.",
+      "string.min": "Each keyword must be at least 2 characters.",
+      "string.max": "Each keyword cannot be more than 30 characters.",
+    }),
   language: Joi.string().valid("fa", "en").required().messages({
     "any.only": "Language must be either 'fa' (Persian) or 'en' (English).",
     "string.empty": "Language is required.",
   }),
 });
 
-exports.validateBlogGenerate = (data) => {
+export const validateBlogGenerate = (data) => {
   const { error } = blogMetaSchema.validate(data, { abortEarly: true });
   if (error) {
     return {

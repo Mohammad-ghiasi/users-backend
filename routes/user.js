@@ -188,8 +188,16 @@
  *         description: Internal server error
  */
 
-const express = require("express");
-const { signup, login, users, user, updateUsers, deleteUser } = require("../controllers/userController");
+import express from "express";
+import {
+  signup,
+  login,
+  users,
+  user,
+  updateUsers,
+  deleteUser,
+} from "../controllers/userController.js";
+
 
 const router = express.Router();
 
@@ -200,4 +208,4 @@ router.get("/user/:userId", user);
 router.put("/updateuser/:userId", updateUsers);
 router.delete("/deleteuser/:userId", deleteUser);
 
-module.exports = router;
+export default router;

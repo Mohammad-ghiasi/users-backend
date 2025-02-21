@@ -111,13 +111,11 @@
  *         description: Internal server error
  */
 
-const express = require("express");
-const {
-  generateBlog,
-  addBlog,
-  getBlog,
-  getBlogs,
-} = require("../controllers/blogController");
+import express from "express";
+import { 
+  generateBlog, addBlog, getBlog, getBlogs
+} from "../controllers/blogController.js";
+
 
 const router = express.Router();
 
@@ -126,4 +124,4 @@ router.post("/addblog", addBlog);
 router.get("/blog/:blogId", getBlog);
 router.get("/blogs", getBlogs);
 
-module.exports = router;
+export default router;

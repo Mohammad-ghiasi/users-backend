@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 const userSchema = Joi.object({
   firstname: Joi.string().trim().min(2).max(30).required().messages({
@@ -28,7 +28,7 @@ const userSchema = Joi.object({
 });
 
 // Validation function that returns an error message if validation fails
-exports.validateUser = (data) => {
+export const validateUser = (data) => {
   const { error } = userSchema.validate(data, { abortEarly: true });
   if (error) {
     return {

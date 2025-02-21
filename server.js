@@ -1,7 +1,7 @@
-const app = require("./app");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const swaggerDocs = require("./swagger");
+import app from "./app.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import swaggerDocs from "./swagger.js";
 
 dotenv.config();
 

@@ -1,19 +1,18 @@
-const UserModle = require("../models/userModel");
-const AddressModle = require("../models/adressModel");
-const { verifyToken } = require("../utils/AuthToken");
-const { validateAddress } = require("../utils/validators/addressValidate");
-const {
-  validateEditAddress,
-} = require("../utils/validators/editeaddressValidate");
+import UserModel from "../models/userModel.js";
+import AddressModel from "../models/adressModel.js";
+import { verifyToken } from "../utils/AuthToken.js";
+import { validateAddress } from "../utils/validators/addressValidate.js";
+import { validateEditAddress } from "../utils/validators/editeaddressValidate.js";
+
 
 // get all address
-exports.alladdress = async (req, res, next) => {
+export const alladdress = async (req, res, next) => {
   try {
     // validating token
     verifyToken(req, res);
 
     // find all address
-    const allAddress = await AddressModle.find();
+    const allAddress = await AddressModel.find();
     return res
       .status(200)
       .json({ message: "Address added successfully", allAddress });
@@ -24,7 +23,7 @@ exports.alladdress = async (req, res, next) => {
 };
 
 // create new address
-exports.newaddress = async (req, res, next) => {
+export const newaddress = async (req, res, next) => {
   try {
     // validating token
     const { userId } = verifyToken(req, res);
@@ -40,50 +39,10 @@ exports.newaddress = async (req, res, next) => {
       });
     }
 
-    const { id, addressName, address, lat, lng } = req.body;
+    const { addressName, address, lat, lng } = req.body;
 
-    exports.newaddress = async (req, res, next) => {
-      try {
-        // validating token
-        const { userId } = verifyToken(req, res);
-        if (!userId) {
-          return res.status(401).json({ message: "Unauthorized" });
-        }
-        // valdidating requset body
-        const { error } = validateAddress(req.body);
-        if (error) {
-          return res.status(400).json({
-            message: "Validation error",
-            error,
-          });
-        }
-    
-        const { addressName, address, lat, lng } = req.body;
-    
-        // // create new address
-        const newAddress = await AddressModle.create({
-          user: userId,
-          addressName,
-          address,
-          lat,
-          lng,
-        });
-    
-        // add creates addres to user
-        await UserModle.findByIdAndUpdate(userId, {
-          $push: { addresses: newAddress._id },
-        });
-    
-        return res
-          .status(201)
-          .json({ message: "Address added successfully", newAddress });
-      } catch (error) {
-        console.error("Error in newAddress:", error);
-        next(error);
-      }
-    };
-    // // create new address
-    const newAddress = await AddressModle.create({
+    // create new address
+    const newAddress = await AddressModel.create({
       user: userId,
       addressName,
       address,
@@ -92,7 +51,7 @@ exports.newaddress = async (req, res, next) => {
     });
 
     // add creates addres to user
-    await UserModle.findByIdAndUpdate(userId, {
+    await UserModel.findByIdAndUpdate(userId, {
       $push: { addresses: newAddress._id },
     });
 
@@ -106,7 +65,7 @@ exports.newaddress = async (req, res, next) => {
 };
 
 // edite address
-exports.editaddress = async (req, res, next) => {
+export const editaddress = async (req, res, next) => {
   try {
     // Validate token
     const { userId } = verifyToken(req, res);
@@ -126,7 +85,7 @@ exports.editaddress = async (req, res, next) => {
     const { id, addressName, address, lat, lng } = req.body;
 
     // Check if address exists
-    const existAddress = await AddressModle.findOne({ _id: id, user: userId });
+    const existAddress = await AddressModel.findOne({ _id: id, user: userId });
     if (!existAddress) {
       return res.status(404).json({ message: "Address not found!" });
     }
@@ -147,10 +106,10 @@ exports.editaddress = async (req, res, next) => {
     }
 
     // Update address in database
-    const updatedAddress = await AddressModle.findByIdAndUpdate(
+    const updatedAddress = await AddressModel.findByIdAndUpdate(
       id,
       { $set: updateAddress },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     return res
@@ -163,7 +122,7 @@ exports.editaddress = async (req, res, next) => {
 };
 
 //delte address
-exports.deleteAddress = async (req, res, next) => {
+export const deleteAddress = async (req, res, next) => {
   try {
     const { userId } = verifyToken(req, res);
     if (!userId) {
@@ -175,7 +134,7 @@ exports.deleteAddress = async (req, res, next) => {
       return res.status(400).json({ message: "invalid address id" });
     }
 
-    const address = await AddressModle.findOne({
+    const address = await AddressModel.findOne({
       _id: addressId,
       user: userId,
     });
@@ -184,10 +143,10 @@ exports.deleteAddress = async (req, res, next) => {
     }
 
     // حذف آدرس
-    await AddressModle.findByIdAndDelete(addressId);
+    await AddressModel.findByIdAndDelete(addressId);
 
     // حذف آدرس از لیست آدرس‌های کاربر
-    await UserModle.findByIdAndUpdate(userId, {
+    await UserModel.findByIdAndUpdate(userId, {
       $pull: { addresses: addressId },
     });
 

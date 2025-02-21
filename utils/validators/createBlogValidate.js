@@ -1,4 +1,5 @@
-const Joi = require("joi");
+import Joi from "joi";
+
 
 const blogSchema = Joi.object({
   title: Joi.string().trim().min(5).max(100).required().messages({
@@ -24,7 +25,7 @@ const blogSchema = Joi.object({
   }),
 });
 
-exports.validateBlog = (data) => {
+export const validateBlog = (data) => {
   const { error } = blogSchema.validate(data, { abortEarly: true });
   if (error) {
     return {

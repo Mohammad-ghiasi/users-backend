@@ -124,8 +124,14 @@
  *         description: Internal server error
  */
 
-const express = require("express");
-const { newaddress, alladdress, deleteAddress, editaddress } = require("../controllers/addressController");
+import express from "express";
+import { 
+  newaddress, 
+  alladdress, 
+  deleteAddress, 
+  editaddress 
+} from "../controllers/addressController.js";
+
 
 const router = express.Router();
 
@@ -134,4 +140,4 @@ router.post("/newaddress", newaddress);
 router.put("/editaddress", editaddress);
 router.delete("/deleteaddress/:addressId", deleteAddress);
 
-module.exports = router;
+export default router;

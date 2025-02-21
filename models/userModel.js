@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -33,21 +34,21 @@ const userSchema = new mongoose.Schema(
     blogs: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "blog", 
+        ref: "blog",
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // delete address and blog for deleted user
 userSchema.pre("findOneAndDelete", async function (next) {
   const userId = this.getQuery()._id;
   await mongoose.model("MyAddress").deleteMany({ user: userId });
-  await mongoose.model("Blog").deleteMany({ user: userId }); // حذف مقالات کاربر
+  await mongoose.model("Blog").deleteMany({ user: userId });
   next();
 });
 
 const User = mongoose.model("MyUsers", userSchema);
 
-module.exports = User;
+export default User;

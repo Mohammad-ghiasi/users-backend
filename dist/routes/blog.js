@@ -4,7 +4,6 @@
  *   name: Blogs
  *   description: Blog management endpoints
  */
-
 /**
  * @swagger
  * /generateblog:
@@ -43,7 +42,6 @@
  *       500:
  *         description: Internal server error
  */
-
 /**
  * @swagger
  * /addblog:
@@ -76,7 +74,6 @@
  *       500:
  *         description: Internal server error
  */
-
 /**
  * @swagger
  * /blog/{blogId}:
@@ -97,7 +94,6 @@
  *       500:
  *         description: Internal server error
  */
-
 /**
  * @swagger
  * /blogs:
@@ -110,18 +106,11 @@
  *       500:
  *         description: Internal server error
  */
-
 import express from "express";
-import { 
-  generateBlog, addBlog, getBlog, getBlogs
-} from "../controllers/blogController.js";
-
-
+import { generateBlog, addBlog, getBlog, getBlogs } from "../controllers/blogController.js";
 const router = express.Router();
-
 router.post("/generateblog", generateBlog);
 router.post("/addblog", addBlog);
 router.get("/blog/:blogId", getBlog);
 router.get("/blogs", getBlogs);
-
 export default router;

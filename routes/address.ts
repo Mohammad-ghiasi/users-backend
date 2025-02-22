@@ -130,7 +130,7 @@ import {
   alladdress, 
   deleteAddress, 
   editaddress 
-} from "../controllers/addressController.js";
+} from "../controllers/addressController";
 
 
 const router = express.Router();

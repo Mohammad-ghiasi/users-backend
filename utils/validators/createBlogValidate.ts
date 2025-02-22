@@ -1,7 +1,15 @@
 import Joi from "joi";
 
+// اینترفیس برای داده‌های بلاگ
+interface Blog {
+  title: string;
+  introduction: string;
+  main_body: string;
+  conclusion: string;
+}
 
-const blogSchema = Joi.object({
+// تعریف `Joi` اسکیمای اعتبارسنجی
+const blogSchema = Joi.object<Blog>({
   title: Joi.string().trim().min(5).max(100).required().messages({
     "string.base": "Title must be a string.",
     "string.empty": "Title is required.",
@@ -25,8 +33,10 @@ const blogSchema = Joi.object({
   }),
 });
 
-export const validateBlog = (data) => {
+// تابع اعتبارسنجی با تایپ مشخص
+export const validateBlog = (data: Blog) => {
   const { error } = blogSchema.validate(data, { abortEarly: true });
+
   if (error) {
     return {
       error: error.details.map((err) => err.message), // لیست خطاها

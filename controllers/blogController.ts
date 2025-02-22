@@ -1,18 +1,20 @@
-import Blog from "../models/blogModel.js";
-import User from "../models/userModel.js";
+import Blog from "../models/blogModel";
+import User from "../models/userModel";
 import axios from "axios";
-import { verifyToken } from "../utils/AuthToken.js";
-import { validateBlog } from "../utils/validators/createBlogValidate.js";
-import { validateBlogGenerate } from "../utils/validators/blogGeneratoeValidate.js";
-import { promptLanguage } from "../utils/languagemanager/promtLanguage.js";
-import { formatResponse } from "../utils/languagemanager/languageFormater.js";
-
+import { DecodedToken, verifyToken } from "../utils/AuthToken";
+import { validateBlog } from "../utils/validators/createBlogValidate";
+import { validateBlogGenerate } from "../utils/validators/blogGeneratoeValidate";
+import { promptLanguage } from "../utils/languagemanager/promtLanguage";
+import { formatResponse } from "../utils/languagemanager/languageFormater";
+import { Request, Response, NextFunction } from "express";
 
 // create conent blog
-export const generateBlog = async (req, res) => {
+export const generateBlog = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const { userId } = verifyToken(req, res);
-    if (!userId) {
+    // token validation
+    const decodedToken: DecodedToken | null = verifyToken(req);
+
+    if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -38,7 +40,7 @@ export const generateBlog = async (req, res) => {
     }
 
     const response = await axios.post(
-      process.env.MY_AI_ORIGIN,
+      process.env.MY_AI_ORIGIN as string,
       {
         model: "mistral-tiny",
         messages: [{ role: "user", content: prompt }],
@@ -47,27 +49,30 @@ export const generateBlog = async (req, res) => {
       {
         headers: { Authorization: `Bearer ${process.env.MY_AI_APIKEY}` },
         timeout: 30000,
-      },
+      }
     );
     const format = formatResponse(
       response.data.choices[0].message.content,
-      language,
+      language
     );
 
     res.status(200).json({ format });
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Error:", error.response?.data || error);
     res.status(500).json({ error: "Failed to generate article" });
   }
 };
 
 // careate a new blog on database
-export const addBlog = async (req, res) => {
+export const addBlog = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const { userId } = verifyToken(req, res);
-    if (!userId) {
+    // validate token
+    const decodedToken: DecodedToken | null = verifyToken(req);
+
+    if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    const { userId } = decodedToken;
 
     const userExists = await User.findById(userId);
     if (!userExists) {
@@ -94,13 +99,13 @@ export const addBlog = async (req, res) => {
 };
 
 // get all blog
-export const getBlog = async (req, res) => {
+export const getBlog = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const { id } = req.params; // گرفتن ID از پارامترهای URL
 
     const blog = await Blog.findById(id).populate(
       "user",
-      "firstname lastname email",
+      "firstname lastname email"
     );
 
     if (!blog) {
@@ -108,22 +113,22 @@ export const getBlog = async (req, res) => {
     }
 
     res.status(200).json({ blog }); // ارسال مقاله پیدا شده
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error:", error.response?.data || error);
     res.status(500).json({ error: "Failed to fetch the blog" });
   }
 };
 
 // get all blogs
-export const getBlogs = async (req, res) => {
+export const getBlogs = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const blogs = await Blog.find().populate(
       "user",
-      "firstname lastname email",
+      "firstname lastname email"
     ); // لیست بلاگ‌ها + اطلاعات نویسنده
 
     res.status(200).json({ blogs }); // مقالات رو برگردون
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error:", error.response?.data || error);
     res.status(500).json({ error: "Failed to fetch blogs" });
   }

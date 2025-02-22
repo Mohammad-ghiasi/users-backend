@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction, Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -6,12 +6,13 @@ import sanitizeHtml from "sanitize-html";
 import dotenv from "dotenv";
 import compression from "compression";
 
-import userRoute from "./routes/user.js";
-import addressRoute from "./routes/address.js";
-import blogRoute from "./routes/blog.js";
+import userRoute from "./routes/user";
+import addressRoute from "./routes/address";
+import blogRoute from "./routes/blog";
 
-const app = express();
 dotenv.config();
+
+const app: Express = express();
 
 // create express app
 app.set("trust proxy", 1);
@@ -59,7 +60,7 @@ app.use(limiter);
 app.use(express.json({ limit: "1mb" }));
 
 // difend (XSS)
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   if (!req.body || Object.keys(req.body).length === 0) {
     return next();
   }
@@ -75,25 +76,25 @@ app.use((req, res, next) => {
 
 // Middleware for parsing JSON
 app.use(express.json());
+
 // * CORS Policy
 app.use(
   cors({
-    origin: process.env.MY_FRONTEND_ORIGIN_USERSTASK, // for production
-    // origin: "http://localhost:3000", // for local
+    origin: process.env.MY_FRONTEND_ORIGIN_USERSTASK || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-app.use((err, req, res, next) => {
+// Error handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
   res.status(500).send("Something went wrong!");
-  next();
 });
 
 // statrt response
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Hello, Worldss!");
 });
 
@@ -103,7 +104,7 @@ app.use("/address", addressRoute);
 app.use("/blog", blogRoute);
 
 // handleing errors
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
   res.status(500).send("Something went wrong!");
 });

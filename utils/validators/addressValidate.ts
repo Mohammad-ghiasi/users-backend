@@ -1,7 +1,15 @@
 import Joi from "joi";
 
+// تعریف اینترفیس برای تایپ داده‌های ورودی
+interface AddressData {
+  addressName: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
 
-const addressSchema = Joi.object({
+// تعریف اسکیمای `Joi`
+const addressSchema = Joi.object<AddressData>({
   addressName: Joi.string().trim().min(3).max(50).required().messages({
     "string.base": "Address Name must be a string.",
     "string.empty": "Address Name is required.",
@@ -30,13 +38,16 @@ const addressSchema = Joi.object({
   }),
 });
 
-export const validateAddress = (data) => {
+// تابع اعتبارسنجی با تایپ مشخص
+export const validateAddress = (data: AddressData) => {
   const { error } = addressSchema.validate(data, { abortEarly: false });
+
   if (error) {
     return {
       error: error.details.map((err) => err.message), // لیست خطاها
       isValid: false,
     };
   }
+
   return { isValid: true }; // داده‌های معتبر
 };

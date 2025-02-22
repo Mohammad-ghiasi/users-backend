@@ -1,6 +1,16 @@
 import Joi from "joi";
 
-const userSchema = Joi.object({
+// تعریف اینترفیس برای کاربر
+interface User {
+  firstname: string;
+  lastname: string;
+  email: string;
+  job: string;
+  password: string;
+}
+
+// تعریف `Joi` اسکیمای اعتبارسنجی
+const userSchema = Joi.object<User>({
   firstname: Joi.string().trim().min(2).max(30).required().messages({
     "string.empty": "Firstname is required.",
     "string.min": "Firstname must be at least 2 characters.",
@@ -27,12 +37,12 @@ const userSchema = Joi.object({
   }),
 });
 
-// Validation function that returns an error message if validation fails
-export const validateUser = (data) => {
+// تابع اعتبارسنجی با تایپ مشخص
+export const validateUser = (data: User) => {
   const { error } = userSchema.validate(data, { abortEarly: true });
   if (error) {
     return {
-      error: error.details[0].message, // Get the first error message
+      error: error.details[0].message, // گرفتن اولین پیام خطا
       isValid: false,
     };
   }

@@ -1,15 +1,19 @@
-import UserModel from "../models/userModel.js";
-import AddressModel from "../models/adressModel.js";
-import { verifyToken } from "../utils/AuthToken.js";
-import { validateAddress } from "../utils/validators/addressValidate.js";
-import { validateEditAddress } from "../utils/validators/editeaddressValidate.js";
-
+import UserModel from "../models/userModel";
+import AddressModel from "../models/adressModel";
+import { DecodedToken, verifyToken } from "../utils/AuthToken";
+import { validateAddress } from "../utils/validators/addressValidate";
+import { validateEditAddress } from "../utils/validators/editeaddressValidate";
+import { Request, Response, NextFunction } from "express";
 
 // get all address
-export const alladdress = async (req, res, next) => {
+export const alladdress = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     // validating token
-    verifyToken(req, res);
+    const decodedToken: DecodedToken | null = verifyToken(req);
+
+    if (!decodedToken) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     // find all address
     const allAddress = await AddressModel.find();
@@ -23,13 +27,15 @@ export const alladdress = async (req, res, next) => {
 };
 
 // create new address
-export const newaddress = async (req, res, next) => {
+export const newaddress = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     // validating token
-    const { userId } = verifyToken(req, res);
-    if (!userId) {
+    const decodedToken: DecodedToken | null = verifyToken(req);
+
+    if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    const { userId } = decodedToken;
     // valdidating requset body
     const { error } = validateAddress(req.body);
     if (error) {
@@ -65,13 +71,16 @@ export const newaddress = async (req, res, next) => {
 };
 
 // edite address
-export const editaddress = async (req, res, next) => {
+export const editaddress = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     // Validate token
-    const { userId } = verifyToken(req, res);
-    if (!userId) {
+    const decodedToken: DecodedToken | null = verifyToken(req);
+
+    if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    const { userId } = decodedToken;
+
 
     // Validate request body
     const { error } = validateEditAddress(req.body);
@@ -95,8 +104,12 @@ export const editaddress = async (req, res, next) => {
 
     // Remove undefined or null values
     Object.keys(updateAddress).forEach((key) => {
-      if (updateAddress[key] === undefined || updateAddress[key] === null) {
-        delete updateAddress[key];
+      const typedKey = key as keyof typeof updateAddress; // 🔹 تبدیل کلید به نوع صحیح
+      if (
+        updateAddress[typedKey] === undefined ||
+        updateAddress[typedKey] === null
+      ) {
+        delete updateAddress[typedKey];
       }
     });
 
@@ -109,7 +122,7 @@ export const editaddress = async (req, res, next) => {
     const updatedAddress = await AddressModel.findByIdAndUpdate(
       id,
       { $set: updateAddress },
-      { new: true, runValidators: true },
+      { new: true, runValidators: true }
     );
 
     return res
@@ -122,13 +135,16 @@ export const editaddress = async (req, res, next) => {
 };
 
 //delte address
-export const deleteAddress = async (req, res, next) => {
+export const deleteAddress = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const { userId } = verifyToken(req, res);
-    if (!userId) {
+    // Validate token
+    const decodedToken: DecodedToken | null = verifyToken(req);
+
+    if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
+    const { userId } = decodedToken;
+    
     const { addressId } = req.params;
     if (!addressId) {
       return res.status(400).json({ message: "invalid address id" });

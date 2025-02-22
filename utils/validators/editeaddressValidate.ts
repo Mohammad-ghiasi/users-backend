@@ -1,7 +1,16 @@
 import Joi from "joi";
 
+// اینترفیس برای داده‌های ویرایش آدرس
+interface EditAddress {
+  id: string;
+  addressName?: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+}
 
-const editAddressSchema = Joi.object({
+// تعریف `Joi` اسکیمای اعتبارسنجی
+const editAddressSchema = Joi.object<EditAddress>({
   id: Joi.string()
     .trim()
     .regex(/^[0-9a-fA-F]{24}$/)
@@ -9,7 +18,6 @@ const editAddressSchema = Joi.object({
     .messages({
       "string.empty": "Address Id is required.",
       "string.base": "ID must be a string.",
-      "string.empty": "ID is required.",
       "string.pattern.base": "ID must be a valid MongoDB ObjectId.",
     }),
   addressName: Joi.string().trim().min(3).max(50).messages({
@@ -34,8 +42,10 @@ const editAddressSchema = Joi.object({
   }),
 });
 
-export const validateEditAddress = (data) => {
+// تابع اعتبارسنجی با تایپ مشخص
+export const validateEditAddress = (data: EditAddress) => {
   const { error } = editAddressSchema.validate(data, { abortEarly: true });
+
   if (error) {
     return {
       error: error.details.map((err) => err.message), // لیست خطاها

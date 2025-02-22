@@ -98,9 +98,10 @@ export const users = async (req: Request, res: Response, next: NextFunction): Pr
 
     // Fetch users with pagination
     const users = await UserModel.find()
-      .select("-password -addresses -updatedAt")
-      .skip(skip)
-      .limit(limit);
+    .select("-password -updatedAt")
+    .populate("addresses") // اینجا آدرس‌ها رو اضافه کردیم
+    .skip(skip)
+    .limit(limit);
 
     // Count total users for pagination metadata
     const totalUsers = await UserModel.countDocuments();

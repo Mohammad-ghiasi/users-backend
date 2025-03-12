@@ -77,7 +77,7 @@ export const login = async (
     res.cookie("auth_token", token, {
       httpOnly: true, // کوکی فقط در HTTP قابل دسترسی است (جلوگیری از XSS)
       secure: true, // فقط در HTTPS ارسال می‌شود
-      sameSite: "lax", // اجازه ارسال بین دامنه‌ای
+      sameSite: "none", // اجازه ارسال بین دامنه‌ای
       maxAge: 2 * 24 * 60 * 60 * 1000, // 2 روز اعتبار
     });
     // ارسال توکن و اطلاعات کاربر

@@ -6,7 +6,11 @@ import { DecodedToken, verifyToken } from "../utils/AuthToken";
 import { Request, Response, NextFunction } from "express";
 
 // signup user
-export const signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const { password, job, email, firstname, lastname } = req.body;
 
@@ -27,7 +31,6 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
       lastname,
     };
 
-
     const createdNewUser = await UserModel.create(newUser);
     res.status(201).json({ createdNewUser });
   } catch (error) {
@@ -36,7 +39,11 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
 };
 
 // login user
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   try {
     const { email, password } = req.body;
 
@@ -66,7 +73,13 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       { expiresIn: "2d" } // تنظیم زمان انقضای توکن
     );
     const userIdHash = user._id.toString().slice(-6);
-
+    
+    res.cookie("auth_token", token, {
+      httpOnly: true, // کوکی فقط در HTTP قابل دسترسی است (جلوگیری از XSS)
+      secure: true, // فقط در HTTPS ارسال می‌شود
+      sameSite: "none", // اجازه ارسال بین دامنه‌ای
+      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 روز اعتبار
+    });
     // ارسال توکن و اطلاعات کاربر
     return res.status(200).json({
       message: "Login successful",
@@ -80,7 +93,11 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 };
 
 // send list of users
-export const users = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const users = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   try {
     // Token validation
     const decodedToken: DecodedToken | null = verifyToken(req);
@@ -88,20 +105,20 @@ export const users = async (req: Request, res: Response, next: NextFunction): Pr
     if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    
+
     // Extract page and limit from query parameters (defaults to page 1 and 10 users per page)
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;    
+    const limit = parseInt(req.query.limit as string) || 10;
 
     // Calculate skip for pagination
     const skip = (page - 1) * limit;
 
     // Fetch users with pagination
     const users = await UserModel.find()
-    .select("-password -updatedAt")
-    .populate("addresses") // اینجا آدرس‌ها رو اضافه کردیم
-    .skip(skip)
-    .limit(limit);
+      .select("-password -updatedAt")
+      .populate("addresses") // اینجا آدرس‌ها رو اضافه کردیم
+      .skip(skip)
+      .limit(limit);
 
     // Count total users for pagination metadata
     const totalUsers = await UserModel.countDocuments();
@@ -123,7 +140,11 @@ export const users = async (req: Request, res: Response, next: NextFunction): Pr
 };
 
 // send single user
-export const user = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const user = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   try {
     // Token validation
     const decodedToken: DecodedToken | null = verifyToken(req);
@@ -149,7 +170,11 @@ export const user = async (req: Request, res: Response, next: NextFunction): Pro
 };
 
 // update users
-export const updateUsers = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const updateUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   try {
     // Token validation
     const decodedToken: DecodedToken | null = verifyToken(req);
@@ -227,7 +252,11 @@ export const updateUsers = async (req: Request, res: Response, next: NextFunctio
 };
 
 // delete user
-export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   try {
     // token validation
     const decodedToken: DecodedToken | null = verifyToken(req);

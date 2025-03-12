@@ -1,13 +1,19 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "server.ts",
-        "use": "@vercel/node"
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.ts",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 10, "memory": 512 }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.ts",
+      "headers": {
+        "Set-Cookie": "SameSite=None; Secure"
       }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "server.ts" }
-    ]
-  }
-  
+    }
+  ]
+}

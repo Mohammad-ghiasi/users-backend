@@ -12,7 +12,7 @@
       "src": "/(.*)",
       "dest": "server.ts",
       "headers": {
-        "Set-Cookie": "SameSite=None; Secure"
+        "Set-Cookie": "SameSite=none; secure"
       }
     }
   ]

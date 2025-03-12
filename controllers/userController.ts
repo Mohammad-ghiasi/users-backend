@@ -74,12 +74,6 @@ export const login = async (
     );
     const userIdHash = user._id.toString().slice(-6);
 
-    res.cookie("auth_token", token, {
-      httpOnly: true, // کوکی فقط در HTTP قابل دسترسی است (جلوگیری از XSS)
-      secure: true, // فقط در HTTPS ارسال می‌شود
-      sameSite: "none", // اجازه ارسال بین دامنه‌ای
-      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 روز اعتبار
-    });
     // ارسال توکن و اطلاعات کاربر
     return res.status(200).json({
       message: "Login successful",
